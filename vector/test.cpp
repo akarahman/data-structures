@@ -18,6 +18,8 @@ void test_remove_illegal();
 void test_pop_basic();
 void test_pop_empty();
 void test_pop_resize();
+void test_find_basic();
+void test_find_multiple();
 
 int main()
 {
@@ -35,6 +37,8 @@ int main()
     test_pop_basic();
     test_pop_empty();
     test_pop_resize();
+    test_find_basic();
+    test_find_multiple();
     return 0;
 }
 
@@ -372,5 +376,40 @@ void test_pop_resize()
     }
     assert(v1.get_size() == 4);
     assert(v1.get_capacity() == 16);
+    print_vector_contents(v1);
+}
+
+void test_find_basic()
+{
+    std::cout << "\nTesting find...\n\n";
+    my_vector<int> v1;
+    for (int i = 0; i < 5; ++i)
+    {
+        v1.push_back(i);
+    }
+    print_vector_contents(v1);
+
+    for (int i = 0; i < 5; ++i)
+    {
+        std::cout << "item with value " << i << " located at index " << v1.find(i) << "\n";
+    }
+}
+
+void test_find_multiple()
+{
+    std::cout << "\nTesting find with multiple instances of the same element...\n\n";
+    my_vector<int> v1;
+    for (int i = 0; i < 10; ++i)
+    {
+        v1.push_back(i % 2);
+    }
+    print_vector_contents(v1);
+
+    for (int i = 0; i < 5; ++i)
+    {
+        int pos = v1.find(0);
+        std::cout << "item with value 0 located at index " << pos << "\n";
+        v1.remove(pos);
+    }
     print_vector_contents(v1);
 }
