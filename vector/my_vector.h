@@ -65,6 +65,11 @@ my_vector<T>::my_vector(int cap)
               << " at address " << arr << "\n";
 }
 
+/*
+ * Requires: v is a vector with elements of type T
+ * Modifies: None
+ * Effects: creates a new vector identical to v
+ */ 
 template <class T>
 my_vector<T>::my_vector(my_vector<T> &v)
 {
