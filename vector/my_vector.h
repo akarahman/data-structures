@@ -10,9 +10,11 @@ public:
     /* constructors and destructor */
     my_vector();
     my_vector(int cap);
+    my_vector(my_vector<T> &v);
     ~my_vector();
     /* [] operator overload */
-    T& operator[](int idx) { return arr[idx]; }
+    T& operator[](const int idx) { return arr[idx]; }
+    my_vector<T>& operator=(const my_vector<T>& v);
     /* getters */
     int get_size() { return size; }
     int get_capacity() { return capacity; }
@@ -56,12 +58,27 @@ my_vector<T>::my_vector()
 template <class T>
 my_vector<T>::my_vector(int cap)
 {
-    capacity = pow(2, ceil(log2((double) cap))); /* capacity set to power of 2 */
+    capacity = (cap < 16) ? 16 : pow(2, ceil(log2((double) cap))); /* capacity set to power of 2 */
     size = 0;
     arr = new T[capacity];
     std::cout << "created vector of size " << size << " and capacity " << capacity
               << " at address " << arr << "\n";
 }
+
+template <class T>
+my_vector<T>::my_vector(my_vector<T> &v)
+{
+    capacity = v.capacity;
+    size = v.size;
+    arr = new T[capacity];
+    for (int i = 0; i < size; ++i)
+    {
+        arr[i] = v[i];
+    }
+    std::cout << "created vector of size " << size << " and capacity " << capacity
+              << " at address " << arr << "\n";
+}
+
 
 /* 
  * Requires: None.
@@ -75,6 +92,12 @@ my_vector<T>::~my_vector()
     delete [] arr;
 }
 
+template <class T>
+my_vector<T>& my_vector<T>::operator=(const my_vector<T>& v)
+{
+    return my_vector<T>(v);
+}
+
 /* 
  * Requires: cap is a positive integer, skip_idx is a non-negative integer
  *           skip_idx is size if there should be no empty space in the new array
@@ -85,6 +108,7 @@ my_vector<T>::~my_vector()
 template <class T>
 void my_vector<T>::resize(int cap, int skip_idx)
 {
+    std::cout << "resizing array from " << capacity << " to " << cap << "\n";
     capacity = cap;
     T* new_arr = new T[cap];
     /* copy over items at positions < skip_idx */
@@ -102,7 +126,7 @@ void my_vector<T>::resize(int cap, int skip_idx)
 }
 
 /* 
- * Requires: idx is a non-negative integer within the range [0, size),
+ * Requires: idx is a non-negative integer within the range [0, size],
  *           val is an instance of class T
  * Modifies: None.
  * Effects: Inserts val at position idx in the array, increments the size,
@@ -111,9 +135,20 @@ void my_vector<T>::resize(int cap, int skip_idx)
 template <class T>
 void my_vector<T>::insert(int idx, T val)
 {
+    if (idx < 0 || idx > size)
+    {
+        throw std::out_of_range("index out of range");
+    }
     if (size == capacity)
     {
         resize(capacity*2, idx); /* double capacity, leave empty space */
+    }
+    else
+    {
+        for (int i = size - 1; i >= idx; --i)
+        {
+            arr[i+1] = arr[i];
+        }
     }
     arr[idx] = val;
     size++;
@@ -151,14 +186,20 @@ void my_vector<T>::push_front(T val)
 template <class T>
 void my_vector<T>::remove(int idx)
 {
+    if (idx < 0 || idx >= size)
+    {
+        throw std::out_of_range("index out of range");
+    }
     /* shift all items at positions > idx to the left by 1 */
     for (int i = idx; i < size - 1; ++i)
     {
         arr[i] = arr[i+1];
     }
     size--;
+    std::cout << "removed element at index " << idx << " in vector now of size "
+              << size << " and capacity " << capacity << "\n";
     /* if size is reduced to 1/4 of capacity, resize to half*/
-    if (size == capacity/4)
+    if (size == capacity/4 && capacity > 16)
     {
         resize(capacity/2, size);
     }
