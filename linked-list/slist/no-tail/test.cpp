@@ -8,6 +8,9 @@ void test_remove_value();
 void test_get_value();
 void test_value_n_from_end();
 void test_reverse();
+void test_get_value_illegal();
+void test_insert_illegal();
+void test_remove_illegal();
 
 int main()
 {
@@ -18,6 +21,9 @@ int main()
     test_get_value();
     test_value_n_from_end();
     test_reverse();
+    test_get_value_illegal();
+    test_insert_illegal();
+    test_remove_illegal();
 }
 
 void test_node_constructors()
@@ -40,6 +46,30 @@ void test_insert()
     l1.insert(l1.get_size(), 4);
     assert(l1.get_size() == 5);
     std::cout << l1;
+}
+
+void test_insert_illegal()
+{
+    std::cout << "\nTesting insert at illegal index...\n\n";
+
+    my_list<int> l1;
+    try {
+        l1.insert(1, 0);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
+    l1.insert(0, 0);
+    try {
+        l1.insert(5, 0);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
 }
 
 void test_erase()
@@ -93,6 +123,30 @@ void test_remove_value()
     std::cout << l1;
 }
 
+void test_remove_illegal()
+{
+    std::cout << "\nTesting remove at illegal index...\n\n";
+
+    my_list<int> l1;
+    try {
+        l1.erase(0);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
+    l1.insert(0,0);
+    try {
+        l1.erase(5);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
+}
+
 void test_get_value()
 {
     std::cout << "\nTesting get value...\n\n";
@@ -109,6 +163,47 @@ void test_get_value()
         assert(l1.value_at(i) == n);
         --n;
     }
+}
+
+void test_get_value_illegal()
+{
+    std::cout << "\nTesting get value illegal...\n\n";
+    my_list<int> l1;
+    try {
+        l1.value_at(1);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
+    try {
+        l1.value_n_from_end(3);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
+    l1.push_front(2);
+
+    try {
+        l1.value_n_from_end(8);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
+    try {
+        l1.value_at(8);
+        assert(false);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught: " << e.what() << "\n";
+    }
+    
 }
 
 void test_value_n_from_end()
