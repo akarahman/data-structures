@@ -235,9 +235,11 @@ int my_vector<T>::find(T val)
     {
         if (arr[i] == val)
         {
+            std::cout << "item with value " << val << " found at index " << i << "\n";
             return i;
         }
     }
+    std::cout << "item not found\n";
     return -1;
 }
 
