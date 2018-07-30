@@ -20,6 +20,7 @@ void test_pop_empty();
 void test_pop_resize();
 void test_find_basic();
 void test_find_multiple();
+void test_find();
 
 int main()
 {
@@ -39,6 +40,7 @@ int main()
     test_pop_resize();
     test_find_basic();
     test_find_multiple();
+    test_find();
     return 0;
 }
 
@@ -412,4 +414,15 @@ void test_find_multiple()
         v1.remove(pos);
     }
     print_vector_contents(v1);
+}
+
+void test_find()
+{
+    my_vector<int> v1;
+    for (int i = 0; i < 10; ++i)
+    {
+        v1.push_front(i);
+    }
+    assert(v1.find(5));
+    assert(v1.find(10) == -1);
 }
