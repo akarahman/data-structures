@@ -148,8 +148,10 @@ void my_list<T>::erase(int idx)
     {
         throw std::out_of_range("index out of range");
     }
+    my_list_node<int>* del = nullptr;
     if (idx == 0)
     {
+        del = head;
         head = head->next;
     }
     else
@@ -159,8 +161,10 @@ void my_list<T>::erase(int idx)
         {
             n = n->next;
         }
+        del = n->next;
         n->next = n->next->next;
     }
+    delete del;
     --size;
     std::cout << "deleted item at index " << idx << "\n";
 }
@@ -276,18 +280,22 @@ void my_list<T>::remove_value(T value)
     {
         my_list_node<T>* n = head;
         my_list_node<T>* prev = nullptr;
+        my_list_node<T>* del = nullptr;
         while (n != nullptr)
         {
             if (n->item == value)
             {
                 if (prev == nullptr)
                 {
+                    del = head;
                     head = n->next;
                 }
                 else
                 {
+                    del = prev->next;
                     prev->next = n->next;
                 }
+                delete del;
                 --size;
                 return;
             }

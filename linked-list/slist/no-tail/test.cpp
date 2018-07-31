@@ -31,8 +31,8 @@ void test_node_constructors()
     std::cout << "\nTesting constructors...\n\n";
     my_list<int> l1;
     assert(l1.get_size() == 0);
-    my_list_node<int>* n1 = new my_list_node<int>(0);
-    my_list_node<int>* n2 = new my_list_node<int>(1, n1);
+    my_list_node<int> n1(0);
+    my_list_node<int> n2(1, &n1);
 }
 
 void test_insert()
