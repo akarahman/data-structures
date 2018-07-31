@@ -118,6 +118,7 @@ my_list<T>::~my_list()
         head = head->next;
         delete del;
     }
+    std::cout << "destroying list...\n";
 }
 
 /*
@@ -201,8 +202,10 @@ void my_list<T>::erase(int idx)
     {
         throw std::out_of_range("index out of range");
     }
+    my_list_node<T>* del = nullptr;
     if (idx == 0)
     {
+        del = head;
         head = head->next;
         if (size <= 1)
         {
@@ -218,12 +221,14 @@ void my_list<T>::erase(int idx)
         {
             n = n->next;
         }
+        del = n->next;
         n->next = n->next->next;
         if (n->next == nullptr)
         {
             tail = n;
         }
     }
+    delete del;
     --size;
     assert_invariants();
     std::cout << "deleted item at index " << idx << "\n";
@@ -366,6 +371,7 @@ void my_list<T>::remove_value(T value)
                         tail = prev;
                     }
                 }
+                delete n;
                 --size;
                 assert_invariants();
                 return;
