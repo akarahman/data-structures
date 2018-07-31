@@ -1,2 +1,1 @@
-# data-structures
-My own data structure implementations.
+# Data Structure Implementations
