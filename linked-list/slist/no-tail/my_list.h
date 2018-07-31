@@ -267,7 +267,7 @@ void my_list<T>::reverse()
 /*
  * Requires: value is an instance of T
  * Modifies: Nothing.
- * Effects: removes the first item in the list that has the value 
+ * Effects: removes the first item in the list that has the value, if exists 
  */
 template <class T>
 void my_list<T>::remove_value(T value)
