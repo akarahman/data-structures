@@ -50,6 +50,11 @@ std::ostream& operator<<(std::ostream& os, const my_list<TT>& list)
     return os;
 }
 
+/*
+ * Requires: None.
+ * Modifies: None.
+ * Effects: Creates a new list.
+ */
 template <class T>
 my_list<T>::my_list()
 {
@@ -57,6 +62,11 @@ my_list<T>::my_list()
     head = nullptr;
 }
 
+/*
+ * Requires: None.
+ * Modifies: None.
+ * Effects: Destroys this.
+ */
 template <class T>
 my_list<T>::~my_list()
 {
@@ -69,6 +79,12 @@ my_list<T>::~my_list()
     }
 }
 
+/*
+ * Requires: idx is a non-negative integer within the range [0, size]
+ *           val is an instance of class T
+ * Modifies: Nothing.
+ * Effects: inserts val at the specified idx
+ */
 template <class T>
 void my_list<T>::insert(int idx, T val)
 {
@@ -98,18 +114,33 @@ void my_list<T>::insert(int idx, T val)
     std::cout << "inserted item at with value " << val << " at index " << idx << "\n";
 }
 
+/*
+ * Requires: val is an instance of T
+ * Modifies: Nothing.
+ * Effects: inserts val at the end of list.
+ */
 template <class T>
 void my_list<T>::push_back(T val)
 {
     insert(size, val);
 }
 
+/*
+ * Requires: val is an instance of T
+ * Modifies: Nothing.
+ * Effects: inserts val at the front of list.
+ */
 template <class T>
 void my_list<T>::push_front(T val)
 {
     insert(0, val);
 }
 
+/*
+ * Requires: idx is a non-negative integer within the range [0, size)
+ * Modifies: Nothing.
+ * Effects: erases item at idx
+ */
 template <class T>
 void my_list<T>::erase(int idx)
 {
@@ -134,18 +165,33 @@ void my_list<T>::erase(int idx)
     std::cout << "deleted item at index " << idx << "\n";
 }
 
+/*
+ * Requires: Nothing.
+ * Modifies: Nothing.
+ * Effects: erases the first item of the list
+ */
 template <class T>
 void my_list<T>::pop_front()
 {
     erase(0);
 }
 
+/*
+ * Requires: Nothing.
+ * Modifies: Nothing.
+ * Effects: erases the last item of the list
+ */
 template <class T>
 void my_list<T>::pop_back()
 {
     erase(size-1);
 }
 
+/*
+ * Requires: idx is a non-negative integer within the range [0,size)
+ * Modifies: Nothing.
+ * Effects: returns item at idx
+ */
 template <class T>
 T my_list<T>::value_at(int idx)
 {
@@ -161,24 +207,44 @@ T my_list<T>::value_at(int idx)
     return n->item;
 }
 
+/*
+ * Requires: Nothing.
+ * Modifies: Nothing.
+ * Effects: returns the first item in the list
+ */
 template <class T>
 T my_list<T>::front()
 {
     return value_at(0);
 }
 
+/*
+ * Requires: Nothing.
+ * Modifies: Nothing.
+ * Effects: returns the last item in the list
+ */
 template <class T>
 T my_list<T>::back()
 {
     return value_at(size-1);
 }
 
+/*
+ * Requires:  n is a non-negative integer within the range [0, size)
+ * Modifies: Nothing.
+ * Effects: returns the nth value from the end of the list
+ */
 template <class T>
 T my_list<T>::value_n_from_end(int n)
 {
     return value_at(size-1-n);
 }
 
+/*
+ * Requires: Nothing.
+ * Modifies: Nothing.
+ * Effects: reverses the order of the list.
+ */
 template <class T>
 void my_list<T>::reverse()
 {
@@ -198,6 +264,11 @@ void my_list<T>::reverse()
     }
 }
 
+/*
+ * Requires: value is an instance of T
+ * Modifies: Nothing.
+ * Effects: removes the first item in the list that has the value 
+ */
 template <class T>
 void my_list<T>::remove_value(T value)
 {
