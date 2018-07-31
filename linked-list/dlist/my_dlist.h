@@ -79,7 +79,9 @@ void my_list<T>::remove_node(my_list_node<T>* n)
 {
     if (n->prev)
     {
+        /* set prev node to node after n */
         n->prev->next = n->next;
+        /* if tail is not being deleted */
         if (n->next) { n->prev->next->prev = n->prev; }
         else { tail = tail->prev; }
     }
@@ -89,8 +91,11 @@ void my_list<T>::remove_node(my_list_node<T>* n)
         if (head) { head->prev = nullptr; }
         else { tail = nullptr; }
     }
+    assert_node_invariants(n->prev);
+    assert_node_invariants(n->next);
     delete n;
     --size;
+    assert_invariants();
 }
 
 /*
@@ -117,8 +122,9 @@ void my_list<T>::assert_invariants()
 template <class T>
 void my_list<T>::assert_node_invariants(my_list_node<T>* n)
 {
-    assert(n->next->prev == n);
-    assert(n->prev->next == n);
+    if (n == nullptr) { return; }
+    if (n->next) { assert(n->next->prev == n); }
+    if (n->prev) { assert(n->prev->next == n); }
 }
 
 template <class TT>
@@ -186,11 +192,15 @@ void my_list<T>::insert(int idx, T val)
     {
         head = new my_list_node<T>(val, head, nullptr);
         head->next->prev = head;
+        assert_node_invariants(head);
+        assert_node_invariants(head->next);
     }
     else if (idx == size)
     {
         tail->next = new my_list_node<T>(val, nullptr, tail);
         tail = tail->next;
+        assert_node_invariants(tail);
+        assert_node_invariants(tail->prev);
     }
     else
     {
@@ -205,6 +215,9 @@ void my_list<T>::insert(int idx, T val)
         {
             temp->prev = n->next;
         }
+        assert_node_invariants(n);
+        assert_node_invariants(n->next);
+        assert_node_invariants(n->next->next);
     }
     ++size;
     assert_invariants();
@@ -242,7 +255,6 @@ template <class T>
 void my_list<T>::erase(int idx)
 {
     remove_node(get_node_at(idx));    
-    assert_invariants();
     std::cout << "deleted item at index " << idx << "\n";
 }
 
@@ -324,15 +336,23 @@ void my_list<T>::reverse()
     {
         my_list_node<T>* n = head;
         my_list_node<T>* temp;
-        temp = tail;
-        tail = head;
-        head = temp;
         while (n != nullptr)
         {
             temp = n->next;
             n->next = n->prev;
             n->prev = temp;
             n = temp;
+        }
+        temp = tail;
+        tail = head;
+        head = temp;
+
+        /* debug purposes */
+        n = head;
+        while (n != nullptr)
+        {
+            assert_node_invariants(n);
+            n = n->next;
         }
     }
     assert_invariants();
