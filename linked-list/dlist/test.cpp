@@ -1,4 +1,4 @@
-#include "my_dlist.h"
+#include "my_list.h"
 
 void test_node_constructors();
 void test_insert();

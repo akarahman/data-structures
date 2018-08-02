@@ -1,4 +1,4 @@
-#include "my_list.h"
+#include "my_forward_list.h"
 
 void test_node_constructors();
 void test_insert();
@@ -28,7 +28,7 @@ int main()
 void test_node_constructors()
 {
     std::cout << "\nTesting constructors...\n\n";
-    my_list<int> l1;
+    my_forward_list<int> l1;
     assert(l1.get_size() == 0);
     my_list_node<int> n1(0);
     my_list_node<int> n2(1, &n1);
@@ -37,7 +37,7 @@ void test_node_constructors()
 void test_insert()
 {
     std::cout << "\nTesting inserts...\n\n";
-    my_list<int> l1;
+    my_forward_list<int> l1;
     l1.push_back(3);
     l1.push_front(1);
     l1.insert(1, 2);
@@ -51,7 +51,7 @@ void test_insert_illegal()
 {
     std::cout << "\nTesting insert at illegal index...\n\n";
 
-    my_list<int> l1;
+    my_forward_list<int> l1;
     try {
         l1.insert(1, 0);
         assert(false);
@@ -75,7 +75,7 @@ void test_erase()
 {
     std::cout << "\nTesting erase...\n\n";
 
-    my_list<int> l1;
+    my_forward_list<int> l1;
     for (int i = 0; i < 5; ++i)
     {
         l1.push_front(i);
@@ -95,7 +95,7 @@ void test_remove_value()
 {
     std::cout << "\nTesting remove value...\n\n";
 
-    my_list<int> l1;
+    my_forward_list<int> l1;
     for (int i = 0; i < 5; ++i)
     {
         l1.push_front(i);
@@ -134,7 +134,7 @@ void test_remove_illegal()
 {
     std::cout << "\nTesting remove at illegal index...\n\n";
 
-    my_list<int> l1;
+    my_forward_list<int> l1;
     try {
         l1.erase(0);
         assert(false);
@@ -158,7 +158,7 @@ void test_get_value()
 {
     std::cout << "\nTesting get value...\n\n";
 
-    my_list<int> l1;
+    my_forward_list<int> l1;
     for (int i = 0; i < 10; ++i)
     {
         l1.push_front(i);
@@ -175,7 +175,7 @@ void test_get_value()
 void test_get_value_illegal()
 {
     std::cout << "\nTesting get value illegal...\n\n";
-    my_list<int> l1;
+    my_forward_list<int> l1;
     try {
         l1.value_at(1);
         assert(false);
@@ -217,7 +217,7 @@ void test_value_n_from_end()
 {
     std::cout << "\nTesting get nth value from the end...\n\n";
 
-    my_list<int> l1;
+    my_forward_list<int> l1;
     for (int i = 0; i < 10; ++i)
     {
         l1.push_front(i);
@@ -233,7 +233,7 @@ void test_reverse()
 {
     std::cout << "\nTesting reverse list...\n\n";
 
-    my_list<int> l1;
+    my_forward_list<int> l1;
     for (int i = 0; i < 10; ++i)
     {
         l1.push_front(i);
