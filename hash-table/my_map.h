@@ -37,7 +37,7 @@ public:
     void erase(iterator &it);
 
     /* lookup */
-    T& operator[](const Key k) const;
+    T& operator[](const Key k);
     iterator find(Key k);
 
 private:
@@ -144,28 +144,28 @@ template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::insert(std::pair<Key, T> kvpair)
 {
     // TODO: linear probing
-    v[Hash(kvpair.first) % num_buckets] = kvpair;
+    v[Hash()(kvpair.first) % num_buckets] = kvpair;
     ++map_size;
 }
 
 template <class Key, class T, class Hash>
 void my_map<Key, T, Hash>::erase(iterator &it)
 {
-    int hash = Hash(it->first) % num_buckets;
+    int hash = Hash()(it->first) % num_buckets;
     deleted[hash] = true;
     empty_slot[hash] = true;
 }
 
 template <class Key, class T, class Hash>
-T& my_map<Key, T, Hash>::operator[](const Key k) const
+T& my_map<Key, T, Hash>::operator[](const Key k)
 {
     // TODO: probing
-    return v[Hash(k) % num_buckets].second;
+    return v[Hash()(k) % num_buckets].second;
 }
 
 template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::find(Key k)
 {
     // TODO: probing
-    return iterator(&v[Hash(k) % num_buckets]);
+    return iterator(&v[Hash()(k) % num_buckets]);
 }
