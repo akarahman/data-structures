@@ -39,11 +39,10 @@ public:
     /* modifiers */
     void clear();
     iterator insert(std::pair<Key, T> kvpair);
-    void erase(iterator &it);
+    void erase(iterator it);
 
     /* lookup */
     T& at(Key k);
-    iterator iterator_at(Key k); // for debugging ONLY
     iterator find(Key k);
 
 private:
@@ -195,18 +194,18 @@ typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::insert(std::pair<K
 }
 
 template <class Key, class T, class Hash>
-void my_map<Key, T, Hash>::erase(iterator &it)
+void my_map<Key, T, Hash>::erase(iterator it)
 {
     int hash = Hash()(it->first) % num_buckets;
     deleted[hash] = true;
     empty_slot[hash] = true;
     if (hash == first)
     {
-        // find next first
-    }
+        first = (++it).index;
+    } 
     if (hash + 1 == last)
     {
-        // find next last
+        last = (--it).index + 1;
     }
     --map_size;
 }
@@ -215,12 +214,6 @@ template <class Key, class T, class Hash>
 T& my_map<Key, T, Hash>::at(Key k)
 {
     return v[Hash()(k) % num_buckets].second;
-}
-
-template <class Key, class T, class Hash>
-typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::iterator_at(Key k)
-{
-    return iterator(this, Hash()(k) % num_buckets);
 }
 
 template <class Key, class T, class Hash>
