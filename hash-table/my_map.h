@@ -14,18 +14,23 @@ public:
     class iterator 
     {
     public:
-        T& operator* () const;
-        T* operator-> () const;
+        std::pair<Key, T>& operator* () const;
+        std::pair<Key, T>* operator-> () const;
         iterator& operator++ ();
-        iterator& operator-- ();
+        iterator operator-- ();
         bool operator== (iterator rhs) const;
         bool operator!= (iterator rhs) const;
 
     private:
-        std::pair<Key, T> *ptr;
+        my_map<Key, T, Hash> *owner;
+        int index;
         friend class my_map;
-        iterator(std::pair<Key, T> *p) : ptr(p) {}
+        iterator(my_map<Key, T, Hash> *p, int idx) : owner(p), index(idx) {}
     };
+
+    /* iterators */
+    iterator begin();
+    iterator end();
 
     /* capacity */
     bool empty();
@@ -37,7 +42,8 @@ public:
     void erase(iterator &it);
 
     /* lookup */
-    T& operator[](const Key k);
+    T& at(Key k);
+    iterator iterator_at(Key k); // for debugging ONLY
     iterator find(Key k);
 
 private:
@@ -46,6 +52,8 @@ private:
     std::vector<bool> empty_slot;
     int map_size;
     int num_buckets;
+    int first;
+    int last;
 };
 
 #endif
@@ -64,6 +72,9 @@ my_map<Key, T, Hash>::my_map()
         deleted[i] = false;
         empty_slot[i] = true;
     }
+    first = 0;
+    last = 0;
+    std::cout << "created new map\n";
 }
 
 template <class Key, class T, class Hash>
@@ -79,47 +90,64 @@ my_map<Key, T, Hash>::my_map(int size)
         deleted[i] = false;
         empty_slot[i] = true;
     }
+    first = 0;
+    last = 0;
 }
 
 template <class Key, class T, class Hash>
 my_map<Key, T, Hash>::~my_map() {}
 
 template <class Key, class T, class Hash>
-T& my_map<Key, T, Hash>::iterator::operator* () const
+std::pair<Key, T>& my_map<Key, T, Hash>::iterator::operator* () const
 {
-    assert(ptr);
-    return *ptr;
+    assert(owner);
+    return owner->v[index];
 }
 
 template <class Key, class T, class Hash>
-T* my_map<Key, T, Hash>::iterator::operator-> () const
+std::pair<Key, T>* my_map<Key, T, Hash>::iterator::operator-> () const
 {
-    assert(ptr);
-    return ptr;
+    assert(owner);
+    return &(owner->v[index]);
 }
 
 template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator& my_map<Key, T, Hash>::iterator::operator++ ()
 {
-    // TODO
+    // std::cout << "first: " << owner->first << " last: " << owner->last << "\n";
+    while (++index != owner->last && owner->empty_slot[index]);
+    return *this;
 }
 
 template <class Key, class T, class Hash>
-typename my_map<Key, T, Hash>::iterator& my_map<Key, T, Hash>::iterator::operator-- ()
+typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::iterator::operator-- ()
 {
-    // TODO
+    while (--index != owner->first && owner->empty_slot[index]);
+    return *this;
 }
 
 template <class Key, class T, class Hash>
 bool my_map<Key, T, Hash>::iterator::operator== (iterator rhs) const
 {
-    return ptr == rhs.ptr; 
+    return (owner == rhs.owner && index == rhs.index); 
 }
 
 template <class Key, class T, class Hash>
 bool my_map<Key, T, Hash>::iterator::operator!= (iterator rhs) const
 {
-    return ptr != rhs.ptr; 
+    return (owner != rhs.owner || index != rhs.index); 
+}
+
+template <class Key, class T, class Hash>
+typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::begin()
+{
+    return iterator(this, first);
+}
+
+template <class Key, class T, class Hash>
+typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::end()
+{
+    return iterator(this, last);
 }
 
 template <class Key, class T, class Hash>
@@ -144,8 +172,26 @@ template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::insert(std::pair<Key, T> kvpair)
 {
     // TODO: linear probing
-    v[Hash()(kvpair.first) % num_buckets] = kvpair;
+    int hash = Hash()(kvpair.first) % num_buckets;
+    v[hash] = kvpair;
+    if (empty())
+    {
+        first = hash;
+        last = hash + 1;
+    }
+    else if (hash < first)
+    {
+        first = hash;
+    }
+    else if (hash >= last)
+    {
+        last = hash + 1;
+    }
+    deleted[hash] = false;
+    empty_slot[hash] = false;
+    
     ++map_size;
+    return iterator(this, hash);
 }
 
 template <class Key, class T, class Hash>
@@ -154,18 +200,33 @@ void my_map<Key, T, Hash>::erase(iterator &it)
     int hash = Hash()(it->first) % num_buckets;
     deleted[hash] = true;
     empty_slot[hash] = true;
+    if (hash == first)
+    {
+        // find next first
+    }
+    if (hash + 1 == last)
+    {
+        // find next last
+    }
+    --map_size;
 }
 
 template <class Key, class T, class Hash>
-T& my_map<Key, T, Hash>::operator[](const Key k)
+T& my_map<Key, T, Hash>::at(Key k)
 {
-    // TODO: probing
     return v[Hash()(k) % num_buckets].second;
+}
+
+template <class Key, class T, class Hash>
+typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::iterator_at(Key k)
+{
+    return iterator(this, Hash()(k) % num_buckets);
 }
 
 template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::find(Key k)
 {
     // TODO: probing
-    return iterator(&v[Hash()(k) % num_buckets]);
+    int hash = Hash()(k) % num_buckets;
+    return iterator(this, hash);
 }
