@@ -203,7 +203,7 @@ void my_map<Key, T, Hash>::erase(iterator it)
     {
         first = (++it).index;
     } 
-    if (hash + 1 == last)
+    if (hash + 1 == last && last != first)
     {
         last = (--it).index + 1;
     }
