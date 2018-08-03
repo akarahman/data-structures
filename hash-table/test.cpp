@@ -144,5 +144,16 @@ void test_erase_basic()
     my_map<char, int> m1;
     std::cout << "\nTesting erase basic...\n\n";
     map_generator_helper(m1);
+    int size = m1.size();
+    int count = 0;
+    for (my_map<char, int>::iterator it = m1.begin(); it != m1.end(); ++it)
+    {
+        ++count;
+        m1.erase(it);
+        assert(m1.size() == size - count);
+    }
+    assert(m1.size() == 0);
+
+
     
 }
