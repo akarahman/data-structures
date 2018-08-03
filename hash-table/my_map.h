@@ -164,7 +164,14 @@ int my_map<Key, T, Hash>::size()
 template <class Key, class T, class Hash>
 void my_map<Key, T, Hash>::clear()
 {
-    // TODO
+    for (int i = 0; i < v.capacity(); ++i)
+    {
+        deleted[i] = false;
+        empty_slot[i] = true;
+    }
+    first = 0;
+    last = 0;
+    map_size = 0;
 }
 
 template <class Key, class T, class Hash>
