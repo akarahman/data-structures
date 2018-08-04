@@ -7,29 +7,63 @@ class my_map
 {
 public:
     /* constructors and destructors */
+
     my_map();
+
+    /*
+     * Requires: size is a positive integer
+     * Effects: creates a map with the specified size
+     */
     my_map(int size);
+
     ~my_map();
 
     class iterator 
     {
     public:
+        /*
+         * Effects: returns a reference to the key-value pair
+         */
         std::pair<Key, T>& operator* () const;
+
+        /*
+         * Effects: returns a pointer to the key-value pair
+         */
         std::pair<Key, T>* operator-> () const;
+
+        /*
+         * Effects: returns an iterator to the next item in the map,
+         *          undefined behavior when incremented past the end
+         */
         iterator& operator++ ();
+
+        /*
+         * Effects: returns an iterator to the previous item before this in the map,
+         *          undefined behavior when decremented below begin
+         */
         iterator operator-- ();
+
         bool operator== (iterator rhs) const;
         bool operator!= (iterator rhs) const;
 
     private:
         my_map<Key, T, Hash> *owner;
-        int index;
+        int index; /* index of the item in the underlying container */
         friend class my_map;
         iterator(my_map<Key, T, Hash> *p, int idx) : owner(p), index(idx) {}
     };
 
     /* iterators */
+
+    /*
+     * Effects: returns an iterator to the first item in the map,
+     *          if map is empty, begin() == end()
+     */
     iterator begin();
+
+    /*
+     * Effects: returns an iterator to the address one past the last item
+     */
     iterator end();
 
     /* capacity */
@@ -37,22 +71,43 @@ public:
     int size();
 
     /* modifiers */
+
+    /*
+     * Effects: removes all items from the map
+     */
     void clear();
+
+    /*
+     * Effects: inserts kvpair into the map and returns an iterator to the item
+     */
     iterator insert(std::pair<Key, T> kvpair);
+
+    /*
+     * Requires: it is an iterator to an item in the map, undefined behavior otherwise
+     * Effects: removes the item pointed to by it from the map
+     */
     void erase(iterator it);
 
     /* lookup */
+
+    /*
+     * Effects: returns a reference to the value associated with k
+     */
     T& at(Key k);
+
+    /*
+     * Effects: returns an iterator to the key-value pair associated with k
+     */
     iterator find(Key k);
 
 private:
-    std::vector<std::pair<Key, T> > v;
-    std::vector<bool> deleted;
-    std::vector<bool> empty_slot;
+    std::vector<std::pair<Key, T> > v; /* hash table */
+    std::vector<bool> deleted;         /* flag to mark a deleted item */
+    std::vector<bool> empty_slot;      /* flag to mark an empty slot */
     int map_size;
     int num_buckets;
-    int first;
-    int last;
+    int first;                         /* index of the first item */
+    int last;                          /* index to the last + 1 item */
 };
 
 #endif
