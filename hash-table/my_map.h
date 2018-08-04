@@ -128,7 +128,7 @@ my_map<Key, T, Hash>::my_map()
     }
     first = 0;
     last = 0;
-    std::cout << "created new map\n";
+    std::cout << "created new map at address " << this << "\n";
 }
 
 template <class Key, class T, class Hash>
@@ -146,6 +146,7 @@ my_map<Key, T, Hash>::my_map(int size)
     }
     first = 0;
     last = 0;
+    std::cout << "created new map at address " << this << "\n";
 }
 
 template <class Key, class T, class Hash>
@@ -170,6 +171,7 @@ typename my_map<Key, T, Hash>::iterator& my_map<Key, T, Hash>::iterator::operato
 {
     // std::cout << "first: " << owner->first << " last: " << owner->last << "\n";
     while (++index != owner->last && owner->empty_slot[index]);
+    std::cout << "incremented iterator\n";
     return *this;
 }
 
@@ -177,6 +179,7 @@ template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::iterator::operator-- ()
 {
     while (--index != owner->first && owner->empty_slot[index]);
+    std::cout << "decremented iterator\n";
     return *this;
 }
 
@@ -219,6 +222,7 @@ int my_map<Key, T, Hash>::size()
 template <class Key, class T, class Hash>
 void my_map<Key, T, Hash>::clear()
 {
+    std::cout << "clearing map of " << map_size << " elements.\n";
     for (int i = 0; i < v.capacity(); ++i)
     {
         deleted[i] = false;
@@ -232,8 +236,14 @@ void my_map<Key, T, Hash>::clear()
 template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::insert(std::pair<Key, T> kvpair)
 {
-    // TODO: linear probing
-    int hash = Hash()(kvpair.first) % num_buckets;
+    int offset = 0;
+    int hash;
+    while (!empty_slot[hash = (Hash()(kvpair.first) + offset) % num_buckets])
+    {
+        std::cout << "Collision occured. " << kvpair.first << " hashed to the same value as " << v[hash].first << ".\n";
+        ++offset;
+    }
+
     v[hash] = kvpair;
     if (empty())
     {
@@ -252,6 +262,8 @@ typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::insert(std::pair<K
     empty_slot[hash] = false;
     
     ++map_size;
+    std::cout << "inserted item with key " << kvpair.first << " and value " << kvpair.second
+              << ", map is now of size " << map_size << ".\n";
     return iterator(this, hash);
 }
 
@@ -270,18 +282,37 @@ void my_map<Key, T, Hash>::erase(iterator it)
         last = (--it).index + 1;
     }
     --map_size;
+    std::cout << "erased item with key " << it->first << " and value " << it->second
+              << ", map is now of size " << map_size << ".\n";
 }
 
 template <class Key, class T, class Hash>
 T& my_map<Key, T, Hash>::at(Key k)
 {
-    return v[Hash()(k) % num_buckets].second;
+    my_map<Key, T, Hash>::iterator it = find(k);
+    if (it == this->end())
+    {
+        throw std::out_of_range("key does not exist");
+    }
+    return it->second;
 }
 
 template <class Key, class T, class Hash>
 typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::find(Key k)
 {
-    // TODO: probing
+    int offset = 0;
     int hash = Hash()(k) % num_buckets;
-    return iterator(this, hash);
+    while (!empty_slot[hash] || deleted[hash])
+    {
+        if (v[hash].first == k)
+        {
+            std::cout << "item with key " << k << " found after " << offset + 1 << " probe(s).\n";
+            return iterator(this, hash);
+        }
+        ++offset;
+        hash = (Hash()(k) + offset) % num_buckets;
+        std::cout << "item with key " << k << " not found at index, re-probing...\n";
+    }
+    std::cout << "item with key " << k << " not found.\n";
+    return iterator(this, this->last);
 }
