@@ -3,6 +3,7 @@
 #include <cassert>
 #include "my_map.h"
 void map_generator_helper(my_map<char, int> &m);
+void map_generator_helper_with_collision(my_map<char, int> &m);
 bool is_anagram(std::string s1, std::string s2);
 void test_constructors();
 void test_insert_basic();
@@ -11,6 +12,8 @@ void test_iterator_advance();
 void test_iterator_dereference();
 void test_iterator_end();
 void test_erase_basic();
+void test_collision_insert_find();
+void test_collision_delete();
 
 int main(int argc, char const *argv[])
 {
@@ -21,6 +24,9 @@ int main(int argc, char const *argv[])
     test_iterator_dereference();
     test_iterator_end();
     test_erase_basic();
+    test_collision_insert_find();
+    test_collision_delete();
+
     return 0;
 }
 
@@ -29,9 +35,18 @@ void map_generator_helper(my_map<char, int> &m)
     for (char c : "helo,wrd")
     {
         if (c == '\0') break;
-        m.insert(std::pair<char, int>(c, 20));
+        m.insert(std::pair<char, int>(c, c));
     }
     assert(m.size() == 8);
+}
+
+void map_generator_helper_with_collision(my_map<char, int> &m)
+{
+    for (char c : "helo,wrd")
+    {
+        m.insert(std::pair<char, int>(c, c));
+    }
+    assert(m.size() == 9);
 }
 
 bool is_anagram(std::string s1, std::string s2)
@@ -106,9 +121,7 @@ void test_iterator_advance()
     }
     else
     {
-        std::cout << it->first << "\n";
         ++it;
-        std::cout << it->first << "\n";
         assert(it->first == 'h');
     }   
 }
@@ -153,7 +166,31 @@ void test_erase_basic()
         assert(m1.size() == size - count);
     }
     assert(m1.size() == 0);
+}
 
+void test_collision_insert_find()
+{
+    std::cout << "\nTesting collision with insert and find...\n\n";
+    my_map<char, int> m1;
+    map_generator_helper_with_collision(m1);
+    assert(m1.at('\0') == '\0');
+    assert(m1.at('d') == 'd');
+    assert(m1.at('e') == 'e');
+}
 
-    
+void test_collision_delete()
+{
+    std::cout << "\nTesting collision with delete and find...\n\n";
+    my_map<char, int> m1;
+    map_generator_helper_with_collision(m1);
+    m1.erase(m1.find('\0'));
+    assert(m1.find('\0') == m1.end());
+    assert(m1.at('d') == 'd');
+    assert(m1.at('e') == 'e');
+    m1.insert(std::make_pair<char, int>('\0', '\0'));
+    m1.erase(m1.find('d'));
+    assert(m1.at('\0') == '\0');
+    assert(m1.at('e') == 'e');
+    m1.erase(m1.find('e'));
+    assert(m1.at('\0') == '\0');
 }
