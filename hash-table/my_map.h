@@ -262,7 +262,7 @@ typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::insert(std::pair<K
     empty_slot[hash] = false;
     
     ++map_size;
-    std::cout << "inserted item with key " << kvpair.first << " and value " << kvpair.second
+    std::cout << "inserted item with key " << kvpair.first << " and value " << kvpair.second << " at index " << hash
               << ", map is now of size " << map_size << ".\n";
     return iterator(this, hash);
 }
@@ -270,20 +270,19 @@ typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::insert(std::pair<K
 template <class Key, class T, class Hash>
 void my_map<Key, T, Hash>::erase(iterator it)
 {
-    int hash = Hash()(it->first) % num_buckets;
-    deleted[hash] = true;
-    empty_slot[hash] = true;
-    if (hash == first)
+    std::cout << "erasing item with key " << it->first << " and value " << it->second << " at index " << it.index << "\n";
+    deleted[it.index] = true;
+    empty_slot[it.index] = true;
+    if (it.index == first)
     {
         first = (++it).index;
     } 
-    if (hash + 1 == last && last != first)
+    else if (it.index + 1 == last && last != first)
     {
         last = (--it).index + 1;
     }
     --map_size;
-    std::cout << "erased item with key " << it->first << " and value " << it->second
-              << ", map is now of size " << map_size << ".\n";
+    std::cout << "map is now of size " << map_size << "\n";
 }
 
 template <class Key, class T, class Hash>
@@ -304,14 +303,17 @@ typename my_map<Key, T, Hash>::iterator my_map<Key, T, Hash>::find(Key k)
     int hash = Hash()(k) % num_buckets;
     while (!empty_slot[hash] || deleted[hash])
     {
-        if (v[hash].first == k)
+        if (!empty_slot[hash])
         {
-            std::cout << "item with key " << k << " found after " << offset + 1 << " probe(s).\n";
-            return iterator(this, hash);
+            if (v[hash].first == k)
+            {
+                std::cout << "item with key " << k << " found after " << offset + 1 << " probe(s).\n";
+                return iterator(this, hash);
+            }
         }
+        std::cout << "item with key " << k << " not found at index " << hash << ", re-probing...\n";
         ++offset;
         hash = (Hash()(k) + offset) % num_buckets;
-        std::cout << "item with key " << k << " not found at index, re-probing...\n";
     }
     std::cout << "item with key " << k << " not found.\n";
     return iterator(this, this->last);
