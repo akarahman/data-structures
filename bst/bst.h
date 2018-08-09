@@ -30,14 +30,20 @@ template <class T> void insert_helper(bst_node<T>* root, T &k);
 template <class T> void insert(bst_node<T>* &root, T &k);
 // Effects: removes node with Key k
 template <class T> void remove(bst_node<T>* root, T &k);
+// Effects: deletes the tree
+template <class T> void delete_tree(bst_node<T>* root);
 // Effects: returns the bst node with key k
 template <class T> bst_node<T>* search(bst_node<T>* root, T &k);
 // Effects: returns the parent node of the node with key k
 template <class T> bst_node<T>* find_parent(bst_node<T>* root, T &k);
 // Effects: returns the parent node of the min node
 template <class T> bst_node<T>* find_parent_of_min(bst_node<T>* root);
-// Effects: returns the node with the min key
-template <class T> bst_node<T>* find_min(bst_node<T>* root);
+// Effects: returns the minimum value in the tree
+template <class T> T& get_min(bst_node<T>* root);
+// Effects: returns the max value in the tree
+template <class T> T& get_max(bst_node<T>* root);
+// Effects: returns true if tree is bst, false otherwise
+template <class T> bool is_bst(bst_node<T>* root);
 
 
 template <class T> int size(bst_node<T>* root)
@@ -74,6 +80,16 @@ template <class T> void traverse_postorder(bst_node<T>* root)
     traverse_postorder(root->left);
     traverse_postorder(root->right);
     std::cout << root->key << " ";
+}
+
+template <class T> bool is_bst(bst_node<T>* root)
+{
+    if (root == nullptr) return true;
+    if (root->right && root->key >= root->right->key) return false;
+    if (root->left && root->key < root->left->key) return false;
+    if (!is_bst(root->right)) return false;
+    if (!is_bst(root->left)) return false;
+    return true;
 }
 
 template <class T> void insert_helper(bst_node<T>* root, T &k)
@@ -134,11 +150,24 @@ template <class T> bst_node<T>* find_parent_of_min(bst_node<T>* root)
     return n;
 }
 
-template <class T> bst_node<T>* find_min(bst_node<T>* root)
+template <class T> T& get_min(bst_node<T>* root)
 {
-    if (root == nullptr) return nullptr;
-    if (root->left == nullptr) return root;
-    return find_min(root->left);
+    if (root == nullptr)
+    {
+        // throw error
+    }
+    if (root->left == nullptr) return root->key;
+    return get_min(root->left);
+}
+
+template <class T> T& get_max(bst_node<T>* root)
+{
+    if (root == nullptr)
+    {
+        // throw error
+    }
+    if (root->right == nullptr) return root->key;
+    return get_max(root->right);
 }
 
 template <class T> void remove(bst_node<T>* root, T &k)
@@ -152,6 +181,8 @@ template <class T> void remove(bst_node<T>* root, T &k)
     if (parent == nullptr) n = root;
     else if (parent->right && parent->right->key == k) n = parent->right;
     else n = parent->left;
+
+    bst_node<T>* del;
 
     /* if the node to be removed has two children */
     if (n->right && n->left)
@@ -171,10 +202,12 @@ template <class T> void remove(bst_node<T>* root, T &k)
 
         if (parent_of_min == n)
         {
+            del = parent_of_min->right;
             parent_of_min->right = parent_of_min->right->right;
         }
         else
         {
+            del = parent_of_min->left;
             parent_of_min->left = nullptr;
         }
     }
@@ -189,12 +222,23 @@ template <class T> void remove(bst_node<T>* root, T &k)
         {
             parent->right = (n->left) ? n->left : n->right;
         }
+        del = n;
     }
     else
     {
         if (parent->left == n) parent->left = nullptr;
         else parent->right = nullptr;
+        del = n;
     }
 
+    delete del;
     std::cout << "removed " << k << "...\n";
+}
+
+template <class T> void delete_tree(bst_node<T>* root)
+{
+    if (root == nullptr) return;
+    if (root->left) delete_tree(root->left);
+    if (root->right) delete_tree(root->right);
+    delete root;
 }
